@@ -1,8 +1,0 @@
-/**
- * 
- */
-/**
- * 
- */
-module projeto_xadrez {
-}
