@@ -23,5 +23,11 @@ public class Board {
 		this.columns = columns;
 	}
 	
+	public Piece piece(int row, int column) { //criado esse metodo para retornar a peça na linha e coluna
+		return pieces[row][column];
+	}
 	
+	public Piece piece(Position position) {//criado uma sobrecarga para retornar a posição que a peça está
+		return pieces[position.getRow()][position.getColumn()];
+	}
 }
