@@ -30,4 +30,9 @@ public class Board {
 	public Piece piece(Position position) {//criado uma sobrecarga para retornar a posição que a peça está
 		return pieces[position.getRow()][position.getColumn()];
 	}
+	
+	public void placePiece(Piece piece, Position position) {//criado um metodo para colocar a peça na posição do tabuleiro
+		pieces[position.getRow()][position.getColumn()] = piece;//a peça será atribuida a peça que veio como argumento na linha e coluna designada
+		piece.position = position;//ou seja, o local não é mais nulo, está na posição que foi informada no metodo
+	}
 }
