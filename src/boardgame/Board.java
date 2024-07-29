@@ -28,7 +28,7 @@ public class Board {
 	}
 	
 	public Piece piece(Position position) {//criado uma sobrecarga para retornar a posição que a peça está
-		if(!positionExists(position)) {
+		if(!positionExists(position)) {//feito programação defensiva caso a posição não exista
 			throw new BoardException("Posição não está no tabuleiro");
 		}
 		return pieces[position.getRow()][position.getColumn()];
@@ -41,6 +41,19 @@ public class Board {
 		pieces[position.getRow()][position.getColumn()] = piece;//a peça será atribuida a peça que veio como argumento na linha e coluna designada
 		piece.position = position;//ou seja, o local não é mais nulo, está na posição que foi informada no metodo
 	}
+	
+	public Piece removePiece(Position position) {
+		if (!positionExists(position)) {//feita programação defensiva caso a posição não exista
+			throw new BoardException("Posição não está no tabuleiro");
+		}
+		if (piece(position) == null) {
+			return null;
+		}
+		Piece aux = piece(position);//feito uma variavel auxiliar para receber a peça na posição
+		aux.position = null;//a posição da peça aux se torna nulo
+		pieces[position.getRow()][position.getColumn()] = null;//avisando a matriz de peças que na linha e na coluna que estava a peça aux, se torna nulo
+		return aux;//retorna a peça retirada
+		}
 	
 	private boolean positionExists(int row, int column) {//metodo auxiliar criado, porque dentro da classe, terá um momento que será mais facil testar pela linha e coluna
 		return row >= 0 && row < rows && column >= 0 && column < columns;//condilçao para se retornar a posição, onde não pode ser menor que 0 e nem maior que o tamanho de linhas e colunas do tabuleiro
