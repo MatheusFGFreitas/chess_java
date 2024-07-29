@@ -1,7 +1,6 @@
 package chess;
 
 import boardgame.Board;
-import boardgame.Position;
 import chess.pieces.King;
 import chess.pieces.Rook;
 
@@ -24,9 +23,13 @@ public class ChessMatch {//o coração do projeto, com todas as regras do jogo
 		return mat;
 	}
 	
+	private void placeNewPiece(char column, int row, ChessPiece piece) {//metodo irá recer as coordenadas do xadrez
+		board.placePiece(piece, new ChessPosition(column, row).toPosition());//passando as coordenadas para um novo chess position com toPosition
+	}
+	
 	private void initialSetup() {//metodo responsavel para colocar as peças no local inicial
-		board.placePiece(new Rook(board, Color.WHITE), new Position(2, 1));//instanciado a peça Torre, com o tabuleiro, e a cor Branca, no local 2, 1
-		board.placePiece(new King(board, Color.BLACK), new Position(0, 4));//instanciado a peça rei no tabuleiro
-		board.placePiece(new King(board, Color.WHITE), new Position(7, 4));//instanciado a peça rei branca no tabuleiro
+		placeNewPiece('b', 6, new Rook(board, Color.WHITE));//instanciado a peça Torre, com o tabuleiro, e a cor Branca, dessa vez com as coordenadas do xadrez atualizada
+		placeNewPiece('e', 8, new King(board, Color.BLACK));//instanciado a peça rei no tabuleiro
+		placeNewPiece('e', 1, new King(board, Color.WHITE));//instanciado a peça rei branca no tabuleiro
 	}
 }
