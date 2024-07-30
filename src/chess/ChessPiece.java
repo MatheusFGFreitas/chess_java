@@ -3,7 +3,7 @@ package chess;
 import boardgame.Board;//ctrl shitf o para importar o necessario para funcionar
 import boardgame.Piece;
 
-public class ChessPiece extends Piece{//extende a classe Piece
+public abstract class ChessPiece extends Piece{//extende a classe Piece
 
 	private Color color;
 

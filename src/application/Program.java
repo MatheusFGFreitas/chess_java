@@ -20,21 +20,21 @@ public class Program {
 				UI.clearScreen();
 				UI.printBoard(chessMatch.getPieces());
 				System.out.println();
-				System.out.print("Local: ");
+				System.out.print("Local: ");//le o local que voce ira mover a peça
 				ChessPosition source = UI.readChessPosition(sc);
 
 				System.out.println();
-				System.out.print("Destino: ");
+				System.out.print("Destino: ");//le o destino que você ira mover a peça
 				ChessPosition target = UI.readChessPosition(sc);
 
-				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);
+				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);//caso capture a peça, vai pra essa variavel
 			}
-			catch (ChessException e) {
-				System.out.println(e.getMessage());
+			catch (ChessException e) {//caso aconteça o erro ChessException
+				System.out.println(e.getMessage());//trata o erro
 				sc.nextLine();
 			}
-			catch (InputMismatchException e) {
-				System.out.println(e.getMessage());
+			catch (InputMismatchException e) {//caso aconteça o erro InputMismatch
+				System.out.println(e.getMessage());//trata o erro
 				sc.nextLine();
 			}
 		}

@@ -47,6 +47,9 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		if(!board.thereIsAPiece(position)) {//se não houver uma peça no local
 			throw new ChessException("nao tem uma peca na posicao designada");//o erro é tratado
 		}
+		if (!board.piece(position).isThereAnyPossibleMove()) {
+			throw new ChessException("nao existe movimentos possiveis para a peca escolhida");
+		}
 	}
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez
