@@ -20,6 +20,11 @@ public class Position {
 	public void setColumn(int column) {
 		this.column = column;
 	}
+	
+	public void setValues(int row, int column) {//feito operação para movimentos sendo o setValues recebendo nova linha e coluna
+		this.row = row;
+		this.column = column;
+	}
 
 	@Override
 	public String toString() {
