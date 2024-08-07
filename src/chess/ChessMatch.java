@@ -28,6 +28,12 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		return mat;
 	}
 	
+	public boolean[][] possibleMoves(ChessPosition sourcePosition){//feita operação para retornar os movimentos possiveis
+		Position position = sourcePosition.toPosition();//convertendo a posição de xadrez para a posição normal
+		validateSourcePosition(position);//validando a posição
+		return board.piece(position).possibleMoves();//retornando os possiveis movimentos
+	}
+	
 	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {//operação que recebe a posição de origem da peça até a posição de destido
 		Position source = sourcePosition.toPosition();//traz o local da peça
 		Position target = targetPosition.toPosition();//traz o destino da peça

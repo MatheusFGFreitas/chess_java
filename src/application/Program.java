@@ -21,8 +21,10 @@ public class Program {
 				UI.printBoard(chessMatch.getPieces());
 				System.out.println();
 				System.out.print("Local: ");//le o local que voce ira mover a peça
-				ChessPosition source = UI.readChessPosition(sc);
-
+				ChessPosition source = UI.readChessPosition(sc);//depois que o usuario digitou a posição de origem	
+				boolean[][] possibleMoves = chessMatch.possibleMoves(source);//declarada matriz booleana recebendo os movimentos possiveis
+				UI.clearScreen();//limpada a tela
+				UI.printBoard(chessMatch.getPieces(), possibleMoves);//printado o tabuleiro com os movimentos possiveis
 				System.out.println();
 				System.out.print("Destino: ");//le o destino que você ira mover a peça
 				ChessPosition target = UI.readChessPosition(sc);

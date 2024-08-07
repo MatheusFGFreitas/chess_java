@@ -8,7 +8,7 @@ public class ChessPosition {
 	private int row;
 	public ChessPosition(char column, int row) {
 		if(column < 'a' || column > 'h' || row < 1 || row > 8) {//feito programação defensiva para caso as colunas ou linhas forem maiores ou menores do que as que são aceitas
-			throw new ChessException("Erro instanciando a posição no xadrez, os valores validos são de a1 até h8");
+			throw new ChessException("Erro instanciando a posicao no xadrez, os valores validos sao de a1 ate h8");
 		}
 		this.column = column;
 		this.row = row;

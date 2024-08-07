@@ -22,21 +22,21 @@ public class Board {
 	
 	public Piece piece(int row, int column) { //criado esse metodo para retornar a peça na linha e coluna
 		if(!positionExists(row, column)) {
-			throw new BoardException("Posição não está no tabuleiro");
+			throw new BoardException("Posicao não esta no tabuleiro");
 		}
 		return pieces[row][column];
 	}
 	
 	public Piece piece(Position position) {//criado uma sobrecarga para retornar a posição que a peça está
 		if(!positionExists(position)) {//feito programação defensiva caso a posição não exista
-			throw new BoardException("Posição não está no tabuleiro");
+			throw new BoardException("Posicao nao esta no tabuleiro");
 		}
 		return pieces[position.getRow()][position.getColumn()];
 	}
 	
 	public void placePiece(Piece piece, Position position) {//criado um metodo para colocar a peça na posição do tabuleiro
 		if(thereIsAPiece(position)) {
-			throw new BoardException("Já tem uma peça na posição " + position);
+			throw new BoardException("Já tem uma peca na posicao " + position);
 		}
 		pieces[position.getRow()][position.getColumn()] = piece;//a peça será atribuida a peça que veio como argumento na linha e coluna designada
 		piece.position = position;//ou seja, o local não é mais nulo, está na posição que foi informada no metodo
@@ -44,7 +44,7 @@ public class Board {
 	
 	public Piece removePiece(Position position) {
 		if (!positionExists(position)) {//feita programação defensiva caso a posição não exista
-			throw new BoardException("Posição não está no tabuleiro");
+			throw new BoardException("Posicao nao este no tabuleiro");
 		}
 		if (piece(position) == null) {
 			return null;
@@ -65,7 +65,7 @@ public class Board {
 	
 	public boolean thereIsAPiece(Position position) {//criado argumento para saber se existe peça ali ou não
 		if(!positionExists(position)) {
-			throw new BoardException("Posição não está no tabuleiro");
+			throw new BoardException("Posicao nao esta no tabuleiro");
 		}
 		return piece(position) != null;//caso seja diferente de nulo, voltará a peça
 	}
