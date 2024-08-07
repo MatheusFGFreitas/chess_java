@@ -9,10 +9,22 @@ import chess.pieces.Rook;
 public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 
 	public Board board;
+	private int turn;
+	private Color currentPlayer;
 
 	public ChessMatch() {// criado um construtor padrão, criando um tabuleiro 8 por 8
 		board = new Board(8, 8);
+		turn = 1;
+		currentPlayer = Color.WHITE;
 		initialSetup();
+	}
+	
+	public int getTurn() {
+		return turn;
+	}
+	
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 
 	public ChessPiece[][] getPieces() {// criado para retornar a matriz das peças de xadrez correspondente a essa
@@ -40,6 +52,7 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		validateSourcePosition(source);//feita a validação que falará se tem peça ou não
 		validateTargetPosition(source, target);//para validar o destino da peça
 		Piece capturedPiece = makeMove(source, target);//declarada a variavel de peça capturada como resultado do movimento da peça
+		nextTurn();//chamado a troca de turno
 		return (ChessPiece)capturedPiece;//retorna a peça capturada fazendo um downcast pois a peça é um ChessPiece
 	}
 	
@@ -54,6 +67,9 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		if(!board.thereIsAPiece(position)) {//se não houver uma peça no local
 			throw new ChessException("nao tem uma peca na posicao designada");//o erro é tratado
 		}
+		if (currentPlayer != ((ChessPiece)board.piece(position)).getColor()) {//feito operação em downcast onde caso o jogador for diferente da cor da peça
+			throw new ChessException("a peca escolhida nao e sua");
+		}
 		if (!board.piece(position).isThereAnyPossibleMove()) {
 			throw new ChessException("nao existe movimentos possiveis para a peca escolhida");
 		}
@@ -63,6 +79,12 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		if (!board.piece(source).possibleMove(target)) {//se a peça de origem, a posição de destino não é possivel, é lançado o erro
 			throw new ChessException("a peca escolhida nao pode mover para a posicao escolhida");//o erro é tratado
 		}
+	}
+	
+	private void nextTurn() {//feito a operação para troca de turno
+		turn ++;
+		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;//feito condicional onde
+		//caso o jogador for branco, então troca pra preto, se não, troca pra branco
 	}
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez

@@ -18,7 +18,7 @@ public class Program {
 		while (true) {
 			try {
 				UI.clearScreen();
-				UI.printBoard(chessMatch.getPieces());
+				UI.printMatch(chessMatch);
 				System.out.println();
 				System.out.print("Local: ");//le o local que voce ira mover a peça
 				ChessPosition source = UI.readChessPosition(sc);//depois que o usuario digitou a posição de origem	

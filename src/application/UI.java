@@ -3,6 +3,7 @@ package application;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import chess.ChessMatch;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.Color;
@@ -48,6 +49,13 @@ public class UI {// o tabuleiro em si, nessa pagina será impressa como está o 
 		catch (RuntimeException e) {//caso aconteça o erro
 			throw new InputMismatchException("Erro lendo ChessPosition, valores validos são de a1 até h8");//ele é tratado e traz a explicação
 		}
+	}
+	
+	public static void printMatch(ChessMatch chessMatch) {
+		printBoard(chessMatch.getPieces());
+		System.out.println();
+		System.out.println("turno; " + chessMatch.getTurn());
+		System.out.println("aguardando jogador da cor: " +  chessMatch.getCurrentPlayer());
 	}
 	
 	public static void printBoard(ChessPiece[][] pieces) {
