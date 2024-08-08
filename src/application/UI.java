@@ -1,7 +1,10 @@
 package application;
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import chess.ChessMatch;
 import chess.ChessPiece;
@@ -51,8 +54,10 @@ public class UI {// o tabuleiro em si, nessa pagina será impressa como está o 
 		}
 	}
 	
-	public static void printMatch(ChessMatch chessMatch) {
+	public static void printMatch(ChessMatch chessMatch, List<ChessPiece> captured) {
 		printBoard(chessMatch.getPieces());
+		System.out.println();
+		printCapturedPieces(captured);//para imprimir as peças capturadas na tela
 		System.out.println();
 		System.out.println("turno; " + chessMatch.getTurn());
 		System.out.println("aguardando jogador da cor: " +  chessMatch.getCurrentPlayer());
@@ -95,5 +100,19 @@ public class UI {// o tabuleiro em si, nessa pagina será impressa como está o 
 			}
 		}
 		System.out.print(" ");
+	}
+	
+	private static void printCapturedPieces(List<ChessPiece> captured) {//feito um comando para fazer uma lista com as peças capturadas de cada cor
+		List<ChessPiece> white = captured.stream().filter(x -> x.getColor() == Color.WHITE).collect(Collectors.toList());//lista para peças brancas
+		List<ChessPiece> black= captured.stream().filter(x -> x.getColor() == Color.BLACK).collect(Collectors.toList());//lista para peças pretas
+		System.out.println("Pecas capturadas");
+		System.out.print("Brancas: ");
+		System.out.print(ANSI_WHITE);//para transformar o que vier em branco
+		System.out.println(Arrays.toString(white.toArray()));//sairá as peças capturadas na cor da fonte branca
+		System.out.print(ANSI_RESET);//irá resetar a cor inserida
+		System.out.print("Pretas: ");
+		System.out.print(ANSI_YELLOW);//para transformar o que vier em amarelo
+		System.out.println(Arrays.toString(black.toArray()));//sairá as peças capturadas na cor da fonte amarela
+		System.out.print(ANSI_RESET);//irá resetar a cor inserida
 	}
 }

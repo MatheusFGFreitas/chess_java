@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import boardgame.Board;
 import boardgame.Piece;
 import boardgame.Position;
@@ -11,6 +14,8 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	public Board board;
 	private int turn;
 	private Color currentPlayer;
+	private List<Piece> piecesOnTheBoard = new ArrayList<>();//feito a lista das peças no jogo e ja instanciado antes do construtor
+	private List<Piece> capturedPieces = new ArrayList<>();
 
 	public ChessMatch() {// criado um construtor padrão, criando um tabuleiro 8 por 8
 		board = new Board(8, 8);
@@ -60,6 +65,11 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		Piece p = board.removePiece(source);
 		Piece capturedPiece = board.removePiece(target);
 		board.placePiece(p, target);
+		
+		if(capturedPiece != null) {
+			piecesOnTheBoard.remove(capturedPiece);
+			capturedPieces.add(capturedPiece);
+		}
 		return capturedPiece;
 	}
 	
@@ -88,8 +98,9 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	}
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez
-		board.placePiece(piece, new ChessPosition(column, row).toPosition());// passando as coordenadas para um novo
-																				// chess position com toPosition
+		board.placePiece(piece, new ChessPosition(column, row).toPosition());// passando as coordenadas para um novo chess position com toPosition
+		piecesOnTheBoard.add(piece);
+		
 	}
 
 	private void initialSetup() {// metodo responsavel para colocar as peças no local inicial
