@@ -16,6 +16,10 @@ public abstract class ChessPiece extends Piece{//extende a classe Piece
 	public Color getColor() {//apagado o set pq n se pode modificiar a cor da peça
 		return color;
 	}
+	
+	public ChessPosition getChessPosition() {//tendo acesso a posição pela herança, convertendo o metodo estatico do chess position para a posição de xadrez
+		return ChessPosition.fromPosition(position);
+	}
 
 	protected boolean isThereOpponentPiece(Position position) {//feita uma operação generica para ser reaproveitada em todas as peças
 		ChessPiece p = (ChessPiece)getBoard().piece(position);//criada a variavel para receber a peça que está nesse local, feito um Downcast pra ChessPiece

@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -14,6 +15,8 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	public Board board;
 	private int turn;
 	private Color currentPlayer;
+	private boolean check;//como o argumento é boolean, ele já vem como falso, então não precosa especificar no construtor
+	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();//feito a lista das peças no jogo e ja instanciado antes do construtor
 	private List<Piece> capturedPieces = new ArrayList<>();
 
@@ -73,6 +76,17 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		return capturedPiece;
 	}
 	
+	private void undoMove(Position source, Position target, Piece capturedPiece) {//metodo criado para desfazer o movimento recebendo posição de origem, destino e uma possivel peca capturada
+		Piece p = board.removePiece(target);//peça retirada do destino
+		board.placePiece(p, source);//retorna a peça ao local de inicio
+		
+		if(capturedPiece != null) {//if para retornar a peça capturada para o lugar
+			board.placePiece(capturedPiece, target);//caso a peça tenha sido capturada
+			capturedPieces.remove(capturedPiece);//é removido da variavel de peças capturadas
+			piecesOnTheBoard.add(capturedPiece);//e é adicionada novamente ao tabuleiro
+		}
+	}
+	
 	private void validateSourcePosition(Position position) {//operação para validar caso tenha peça na posição
 		if(!board.thereIsAPiece(position)) {//se não houver uma peça no local
 			throw new ChessException("nao tem uma peca na posicao designada");//o erro é tratado
@@ -95,6 +109,20 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		turn ++;
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;//feito condicional onde
 		//caso o jogador for branco, então troca pra preto, se não, troca pra branco
+	}
+	
+	private Color opponent(Color color) {
+		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;//se essa cor do argumento for igual a white, retorna black, caso contrario retorna white
+	}
+	
+	private ChessPiece king(Color color) {
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		for (Piece p : list) {
+			if (p instanceof King) {
+				return (ChessPiece)p;
+			}
+		}
+		throw new IllegalStateException("nao a nenhum rei no tabuleiro com a cor" + color);
 	}
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez
