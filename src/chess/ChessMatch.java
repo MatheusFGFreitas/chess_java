@@ -34,6 +34,10 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	public Color getCurrentPlayer() {
 		return currentPlayer;
 	}
+	
+	public boolean getCheck() {
+		return check;
+	}
 
 	public ChessPiece[][] getPieces() {// criado para retornar a matriz das peças de xadrez correspondente a essa
 										// partida
@@ -60,6 +64,14 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		validateSourcePosition(source);//feita a validação que falará se tem peça ou não
 		validateTargetPosition(source, target);//para validar o destino da peça
 		Piece capturedPiece = makeMove(source, target);//declarada a variavel de peça capturada como resultado do movimento da peça
+		
+		if (testCheck(currentPlayer)) {//if para testar se o jogadr vai se colocar em xeque, caso for
+			undoMove(source, target, capturedPiece);//o movimento retorna
+			throw new ChessException("voce nao pode se colocar em xeque");//e o erro é tratado
+		}
+		
+		check = (testCheck(opponent(currentPlayer))) ? true : false;//caso o oponente fique em xeque apos seu movimento, o check vira verdadeiro
+		
 		nextTurn();//chamado a troca de turno
 		return (ChessPiece)capturedPiece;//retorna a peça capturada fazendo um downcast pois a peça é um ChessPiece
 	}
@@ -111,11 +123,11 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		//caso o jogador for branco, então troca pra preto, se não, troca pra branco
 	}
 	
-	private Color opponent(Color color) {
+	private Color opponent(Color color) {//confirmando a cor
 		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;//se essa cor do argumento for igual a white, retorna black, caso contrario retorna white
 	}
 	
-	private ChessPiece king(Color color) {
+	private ChessPiece king(Color color) {//confirmando se a peça é de determinada cor
 		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
 		for (Piece p : list) {
 			if (p instanceof King) {
@@ -123,6 +135,18 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 			}
 		}
 		throw new IllegalStateException("nao a nenhum rei no tabuleiro com a cor" + color);
+	}
+	
+	private boolean testCheck(Color color) {//criando um teste para saber que está em cheque
+		Position kingPosition = king(color).getChessPosition().toPosition();//linha trazendo a peça rei do usuario, para saber a posição que está no tabuleiro
+		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());//pegado a lista de peças do oponente
+		for(Piece p : opponentPieces) {//fazendo um for para saber se as peças inimigas podem matar o rei
+			boolean[][] mat = p.possibleMoves();//checando o local das peças e os movimentos das peças
+			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) {//verificando se alguma peça pode capturar o rei
+				return true;//o teste de cheque deu verdadeiro
+			}
+		}
+		return false;//nenhuma peça está em posição de tomar o rei, logo ele não está em cheque
 	}
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez

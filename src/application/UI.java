@@ -61,6 +61,9 @@ public class UI {// o tabuleiro em si, nessa pagina será impressa como está o 
 		System.out.println();
 		System.out.println("turno; " + chessMatch.getTurn());
 		System.out.println("aguardando jogador da cor: " +  chessMatch.getCurrentPlayer());
+		if (chessMatch.getCheck()) {
+			System.out.println("Xeque!");
+		}
 	}
 	
 	public static void printBoard(ChessPiece[][] pieces) {

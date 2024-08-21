@@ -25,7 +25,7 @@ public class ChessPosition {
 	}
 	
 	protected static ChessPosition fromPosition(Position position) {//metodo estatico recebendo position como argumento
-		return new ChessPosition((char)('a' - position.getColumn()), 8 - position.getRow());//trazendo a formula inversa a position to position, convertendo pra char pois a conversão não é automatica
+		return new ChessPosition((char)('a' + position.getColumn()), 8 - position.getRow());//trazendo a formula inversa a position to position, convertendo pra char pois a conversão não é automatica
 	}
 	
 	@Override
