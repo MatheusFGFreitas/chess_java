@@ -16,6 +16,7 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	private int turn;
 	private Color currentPlayer;
 	private boolean check;//como o argumento é boolean, ele já vem como falso, então não precosa especificar no construtor
+	private boolean checkMate;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();//feito a lista das peças no jogo e ja instanciado antes do construtor
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -39,6 +40,10 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		return check;
 	}
 
+	public boolean getCheckMate() {
+		return checkMate;
+	}
+	
 	public ChessPiece[][] getPieces() {// criado para retornar a matriz das peças de xadrez correspondente a essa
 										// partida
 		ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
@@ -72,7 +77,12 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		
 		check = (testCheck(opponent(currentPlayer))) ? true : false;//caso o oponente fique em xeque apos seu movimento, o check vira verdadeiro
 		
-		nextTurn();//chamado a troca de turno
+		if(testCheckMate(opponent(currentPlayer))) {//caso o movimento que eu fiz deixou em xeque mate
+			checkMate = true;//retorna como verdadeiro
+		}
+		else {
+			nextTurn();//chamado a troca de turno
+		}
 		return (ChessPiece)capturedPiece;//retorna a peça capturada fazendo um downcast pois a peça é um ChessPiece
 	}
 	
@@ -147,6 +157,31 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 			}
 		}
 		return false;//nenhuma peça está em posição de tomar o rei, logo ele não está em cheque
+	}
+	private boolean testCheckMate(Color color) {//criando um teste para saber se está em xeque mate
+		if(!testCheck(color)) {//feito um if já de cara para retirar a possibilidade de dar erro, pois se a peça não está em xeque, logo ela tambem não está em xeque mate
+			return false;
+		}
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());//filtrar todas as peças da lista
+		for (Piece p : list) {//feito for para cada peça da lista, porque caso a peça tenha movimento que tire do xeque, então não está em xeque mate
+			boolean[][] mat = p.possibleMoves();//feito uma matriz de booleano para percorrer o possible moves de cada peça
+			for (int i=0; i<board.getRows(); i++) {//for para percorrer as linhas
+				for (int j=0; j<board.getColumns(); j++) {//e um para percorrer as colunas
+					if (mat[i][j]) {
+						Position source = ((ChessPiece)p).getChessPosition().toPosition();//downcast da variavel p para ChessPiece, chamando o chessposition para a posicao no formato de xadrez, convertendo ela para toPosition
+						Position target = new Position(i, j);//instanciando new position com a linha i e j
+						Piece capturedPiece = makeMove(source, target);//fazendo o movimento da peça para a linha e coluna de destino
+						boolean testCheck =  testCheck(color); //feito o teste para ver se ainda está em xeque
+						undoMove(source, target, capturedPiece);//voltando as peças aos lugares após o teste
+						if(!testCheck) {//caso algum movimento de peça tire do xeque
+							return false;//retorna que não está em xeque mate
+						}
+					}
+				}
+			}
+			
+		}
+		return true;
 	}
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez

@@ -60,9 +60,15 @@ public class UI {// o tabuleiro em si, nessa pagina será impressa como está o 
 		printCapturedPieces(captured);//para imprimir as peças capturadas na tela
 		System.out.println();
 		System.out.println("turno; " + chessMatch.getTurn());
-		System.out.println("aguardando jogador da cor: " +  chessMatch.getCurrentPlayer());
-		if (chessMatch.getCheck()) {
-			System.out.println("Xeque!");
+		if (!chessMatch.getCheckMate()) {//feito um if, para caso não esteja com xeque mate o jogo continua
+			System.out.println("aguardando jogador da cor: " +  chessMatch.getCurrentPlayer());
+			if (chessMatch.getCheck()) {
+				System.out.println("Xeque!");
+			}
+		}
+		else {
+			System.out.println("Xeque-Mate!");
+			System.out.println("Vencedor: " + chessMatch.getCurrentPlayer());
 		}
 	}
 	
