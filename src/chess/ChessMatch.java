@@ -21,6 +21,7 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	private Color currentPlayer;
 	private boolean check;//como o argumento é boolean, ele já vem como falso, então não precosa especificar no construtor
 	private boolean checkMate;
+	private ChessPiece enPassantVulnerable;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();//feito a lista das peças no jogo e ja instanciado antes do construtor
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -46,6 +47,10 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 
 	public boolean getCheckMate() {
 		return checkMate;
+	}
+	
+	public ChessPiece getEnPassantVulnerable(){
+		return enPassantVulnerable;
 	}
 	
 	public ChessPiece[][] getPieces() {// criado para retornar a matriz das peças de xadrez correspondente a essa
@@ -79,6 +84,8 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 			throw new ChessException("voce nao pode se colocar em xeque");//e o erro é tratado
 		}
 		
+		ChessPiece movedPiece = (ChessPiece)board.piece(target);
+		
 		check = (testCheck(opponent(currentPlayer))) ? true : false;//caso o oponente fique em xeque apos seu movimento, o check vira verdadeiro
 		
 		if(testCheckMate(opponent(currentPlayer))) {//caso o movimento que eu fiz deixou em xeque mate
@@ -87,6 +94,14 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		else {
 			nextTurn();//chamado a troca de turno
 		}
+		//movimento en passant
+		if (movedPiece instanceof Pawn && (target.getRow() == source.getRow() - 2 || target.getRow() == source.getRow() + 2)) {//caso a peça seja um peão e se andou duas casas do local de origem será marcada como vulneravel
+			enPassantVulnerable = movedPiece;
+		}
+		else {
+			enPassantVulnerable = null;
+		}
+		
 		return (ChessPiece)capturedPiece;//retorna a peça capturada fazendo um downcast pois a peça é um ChessPiece
 	}
 	
@@ -117,8 +132,26 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 					rook.increaseMoveCount();
 			}
 		
+			//movimento en passant
+			
+			if(p instanceof Pawn) {
+				if (source.getColumn() != target.getColumn() && capturedPiece == null) {//testando caso o peão andou na diagonal e não capturou peça, significa q foi en passant
+					Position pawnPosition;
+					if(p.getColor() == Color.WHITE) {//se o peão for de cor branca
+						pawnPosition = new Position(target.getRow() + 1, target.getColumn());//posição do peão a ser capturado no ponto de vista do peão branco
+					}
+					else {
+						pawnPosition = new Position(target.getRow() - 1, target.getColumn());//posição do peão a ser capturado no ponto de vista do peão preto
+					}
+					capturedPiece = board.removePiece(pawnPosition);//a peça é capturada
+					capturedPieces.add(capturedPiece);//adicionada a lista de peças capturadas
+					piecesOnTheBoard.remove(capturedPiece);//e removida do tabuleiro
+				}
+			}
+			
 		return capturedPiece;
 	}
+	
 	
 	private void undoMove(Position source, Position target, Piece capturedPiece) {//metodo criado para desfazer o movimento recebendo posição de origem, destino e uma possivel peca capturada
 		ChessPiece p = (ChessPiece)board.removePiece(target);//peça retirada do destino (alterado também para chess piece, igual o makemove
@@ -146,8 +179,25 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 				board.placePiece(rook, sourceT);
 				rook.decreaseMoveCount();
 			}
+			
+			//movimento en passant
+			
+			if(p instanceof Pawn) {
+				if (source.getColumn() != target.getColumn() && capturedPiece == enPassantVulnerable) {//testando caso o peão andou na diagonal e capturou uma peça vulneravel
+					ChessPiece pawn = (ChessPiece)board.removePiece(target);//essa peça foi retirada do lugar errado onde voltaria, que seria uma casa a cima ou abaixo de onde estava quando levou o en passant
+					Position pawnPosition;
+					if(p.getColor() == Color.WHITE) {//se o peão for de cor branca
+						pawnPosition = new Position(3 , target.getColumn());//posição do peão a ser retornado ao tabuleiro pelo ponto de vista do peão branco
+					}
+					else {
+						pawnPosition = new Position(4, target.getColumn());//posição do peão a ser retornado ao tabuleiro pelo ponto de vista do peão preto
+					}
+					board.placePiece(pawn, pawnPosition);//a peça é re-inserida no tabuleiro
+				}
+			}
 	
 	}
+	
 	
 	private void validateSourcePosition(Position position) {//operação para validar caso tenha peça na posição
 		if(!board.thereIsAPiece(position)) {//se não houver uma peça no local
@@ -161,11 +211,13 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		}
 	}
 	
+	
 	private void validateTargetPosition(Position source, Position target) {//feito operação para saber se é possivel o movimento
 		if (!board.piece(source).possibleMove(target)) {//se a peça de origem, a posição de destino não é possivel, é lançado o erro
 			throw new ChessException("a peca escolhida nao pode mover para a posicao escolhida");//o erro é tratado
 		}
 	}
+	
 	
 	private void nextTurn() {//feito a operação para troca de turno
 		turn ++;
@@ -173,9 +225,11 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		//caso o jogador for branco, então troca pra preto, se não, troca pra branco
 	}
 	
+	
 	private Color opponent(Color color) {//confirmando a cor
 		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;//se essa cor do argumento for igual a white, retorna black, caso contrario retorna white
 	}
+	
 	
 	private ChessPiece king(Color color) {//confirmando se a peça é de determinada cor
 		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
@@ -186,6 +240,7 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		}
 		throw new IllegalStateException("nao a nenhum rei no tabuleiro com a cor" + color);
 	}
+	
 	
 	private boolean testCheck(Color color) {//criando um teste para saber que está em cheque
 		Position kingPosition = king(color).getChessPosition().toPosition();//linha trazendo a peça rei do usuario, para saber a posição que está no tabuleiro
@@ -198,6 +253,8 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		}
 		return false;//nenhuma peça está em posição de tomar o rei, logo ele não está em cheque
 	}
+	
+	
 	private boolean testCheckMate(Color color) {//criando um teste para saber se está em xeque mate
 		if(!testCheck(color)) {//feito um if já de cara para retirar a possibilidade de dar erro, pois se a peça não está em xeque, logo ela tambem não está em xeque mate
 			return false;
@@ -223,12 +280,14 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		}
 		return true;
 	}
+	
 
 	private void placeNewPiece(char column, int row, ChessPiece piece) {// metodo irá recer as coordenadas do xadrez
 		board.placePiece(piece, new ChessPosition(column, row).toPosition());// passando as coordenadas para um novo chess position com toPosition
 		piecesOnTheBoard.add(piece);
 		
 	}
+	
 
 	private void initialSetup() {// metodo responsavel para colocar as peças no local inicial
 		placeNewPiece('a', 1, new Rook(board, Color.WHITE));
@@ -239,14 +298,14 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		placeNewPiece('f', 1, new Bishop(board, Color.WHITE));
 		placeNewPiece('g', 1, new Knight(board, Color.WHITE));
 		placeNewPiece('h', 1, new Rook(board, Color.WHITE));
-		placeNewPiece('a', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('b', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('c', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('d', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('e', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('f', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('g', 2, new Pawn(board, Color.WHITE));
-		placeNewPiece('h', 2, new Pawn(board, Color.WHITE));
+		placeNewPiece('a', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('b', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('c', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('d', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('e', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('f', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('g', 2, new Pawn(board, Color.WHITE, this));
+		placeNewPiece('h', 2, new Pawn(board, Color.WHITE, this));
 		
 		
 		placeNewPiece('a', 8, new Rook(board, Color.BLACK));
@@ -257,14 +316,15 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		placeNewPiece('f', 8, new Bishop(board, Color.BLACK));
 		placeNewPiece('g', 8, new Knight(board, Color.BLACK));
 		placeNewPiece('h', 8, new Rook(board, Color.BLACK));
-		placeNewPiece('a', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('b', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('c', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('d', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('e', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('f', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('g', 7, new Pawn(board, Color.BLACK));
-		placeNewPiece('h', 7, new Pawn(board, Color.BLACK));
+		placeNewPiece('a', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('b', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('c', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('d', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('e', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('f', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('g', 7, new Pawn(board, Color.BLACK, this));
+		placeNewPiece('h', 7, new Pawn(board, Color.BLACK, this));
 		
 	}
+	
 }
