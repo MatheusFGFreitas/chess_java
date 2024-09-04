@@ -76,7 +76,7 @@ public class Pawn extends ChessPiece{
 			
 			if(position.getRow() == 4) {//caso o peão branco esteja na linha 4 da matrix (linha 4 no xadrez), ira fazer o teste do en passant
 				Position left = new Position(position.getRow(), position.getColumn() -1);
-				if(getBoard().positionExists(left) && isThereOpponentPiece(left) && getBoard().piece(left) == chessMatch.getEnPassantVulnerable());{//testando se a posição da esquerda existe, se existe uma peça a esquerda e se está vulneravel a en passant
+				if(getBoard().positionExists(left) && isThereOpponentPiece(left) && getBoard().piece(left) == chessMatch.getEnPassantVulnerable()){//testando se a posição da esquerda existe, se existe uma peça a esquerda e se está vulneravel a en passant
 					mat[left.getRow() + 1][left.getColumn()] = true;//possibilita o movimento en passant
 				}
 			}

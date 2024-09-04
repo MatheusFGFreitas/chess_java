@@ -40,7 +40,11 @@ public class Program {
 				
 				if(chessMatch.getPromoted() != null) {
 					System.out.println("Entre a peca da promocao (B/N/R/Q): ");
-					String type = sc.nextLine();
+					String type = sc.nextLine().toUpperCase();//to uppercase sobe automatico pro maiusculo
+					while (!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {//enquanto ele não digitar uma das quatro letras
+						System.out.println("peca invalida! Entre a peca da promocao (B/N/R/Q): ");
+						type = sc.nextLine().toUpperCase();
+					}
 					chessMatch.replacePromotedPiece(type);
 				}
 			}

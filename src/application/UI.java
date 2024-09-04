@@ -15,7 +15,7 @@ public class UI {// o tabuleiro em si, nessa pagina será impressa como está o 
 	
 	//codigos especiais para printar as cores, retiradas no link abaixo segundo a aula
 	// https://stackoverflow.com/questions/5762491/how-to-print-color-in-console-using-system-out-println
-
+	
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLACK = "\u001B[30m";
 	public static final String ANSI_RED = "\u001B[31m";
