@@ -37,6 +37,12 @@ public class Program {
 				if (capturedPiece != null) {//comando para capturar a peça, e a inserir na lista
 					captured.add(capturedPiece);
 				}
+				
+				if(chessMatch.getPromoted() != null) {
+					System.out.println("Entre a peca da promocao (B/N/R/Q): ");
+					String type = sc.nextLine();
+					chessMatch.replacePromotedPiece(type);
+				}
 			}
 			catch (ChessException e) {//caso aconteça o erro ChessException
 				System.out.println(e.getMessage());//trata o erro

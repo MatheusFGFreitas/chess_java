@@ -1,5 +1,6 @@
 package chess;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	private boolean check;//como o argumento é boolean, ele já vem como falso, então não precosa especificar no construtor
 	private boolean checkMate;
 	private ChessPiece enPassantVulnerable;
+	private ChessPiece promoted;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();//feito a lista das peças no jogo e ja instanciado antes do construtor
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -51,6 +53,10 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 	
 	public ChessPiece getEnPassantVulnerable(){
 		return enPassantVulnerable;
+	}
+	
+	public ChessPiece getPromoted(){
+		return promoted;
 	}
 	
 	public ChessPiece[][] getPieces() {// criado para retornar a matriz das peças de xadrez correspondente a essa
@@ -86,6 +92,17 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		
 		ChessPiece movedPiece = (ChessPiece)board.piece(target);
 		
+		//promoção
+		
+		promoted = null;//deixando o valor de promoção nulo no inicio
+		
+		if(movedPiece instanceof Pawn) {//se a ultima peça movida for peão
+			if ((movedPiece.getColor() == Color.WHITE && target.getRow() == 0) || (movedPiece.getColor() == Color.BLACK && target.getRow() == 7)){//se o peão da cor branca chegou na matrix 0 ou o peão preto chegou na matrix 7
+				promoted = (ChessPiece)board.piece(target);//o peão que chegou foi promovido]
+				promoted = replacePromotedPiece("Q");//troca automaticamente por padrão para a rainha
+			}
+		}
+		
 		check = (testCheck(opponent(currentPlayer))) ? true : false;//caso o oponente fique em xeque apos seu movimento, o check vira verdadeiro
 		
 		if(testCheckMate(opponent(currentPlayer))) {//caso o movimento que eu fiz deixou em xeque mate
@@ -103,6 +120,32 @@ public class ChessMatch {// o coração do projeto, com todas as regras do jogo
 		}
 		
 		return (ChessPiece)capturedPiece;//retorna a peça capturada fazendo um downcast pois a peça é um ChessPiece
+	}
+	
+	public ChessPiece replacePromotedPiece(String type) {
+		if (promoted == null) {//programação defensiva para tratar o erro caso a peça seja nula
+			throw new IllegalThreadStateException("Nao tem peca para ser promovida");
+		}
+		if(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {
+			throw new InvalidParameterException("Tipo invalido para promocao");			
+		}
+		
+		Position pos = promoted.getChessPosition().toPosition();
+		Piece p = board.removePiece(pos);
+		piecesOnTheBoard.remove(p);
+		
+		ChessPiece newPiece = newPiece(type, promoted.getColor());
+		board.placePiece(newPiece, pos);
+		piecesOnTheBoard.add(newPiece);
+		
+		return newPiece;
+	}
+	
+	private ChessPiece newPiece(String type, Color color) {
+		if(type.equals("B")) return new Bishop (board, color);
+		if(type.equals("N")) return new Knight (board, color);
+		if(type.equals("Q")) return new Queen (board, color);
+		return new Rook (board, color);
 	}
 	
 	private Piece makeMove(Position source, Position target) {
